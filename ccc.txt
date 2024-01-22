@@ -1,2 +1,6 @@
 ccc
+<<<<<<< Updated upstream
 change3
+=======
+change2
+>>>>>>> Stashed changes
