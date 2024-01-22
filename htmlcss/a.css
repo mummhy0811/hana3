@@ -1,0 +1,25 @@
+.bg-red{
+    background-color: red;
+}
+body {
+    background-color: lightblue;
+}
+
+h1 {
+    color: white;
+    text-align: center;
+}
+
+p {
+    background-color: blueviolet;
+    font-family: verdana;
+    font-size: 20px;
+}
+
+ul > p {
+    background-color: greenyellow;
+}
+
+#num{
+    background-color: bisque;
+}
