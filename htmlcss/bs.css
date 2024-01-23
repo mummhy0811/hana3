@@ -1,0 +1,51 @@
+/* body::before{
+    content:'BBB'
+} */
+
+@media (max-width: 576px) {
+    body::before {
+        content: 'sm'
+    }
+}
+
+@media (min-width: 576px) {
+    body::before {
+        content: 'sm'
+    }
+}
+
+/* // Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+    body::before {
+        content: 'md'
+    }
+}
+
+/* // Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    body::before {
+        content: 'lg'
+    }
+}
+
+/* // X-Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+    body::before {
+        content: 'xl'
+    }
+}
+
+/* // XX-Large devices (larger desktops, 1400px and up) */
+@media (min-width: 1400px) {
+    body::before {
+        content: 'xxl'
+    }
+}
+
+.box {
+    background-color: lightcoral;
+    border: 1px solid red;
+    min-height: 2rem;
+    font-size: 2rem;
+    width: 100%;
+}
