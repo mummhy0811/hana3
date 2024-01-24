@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice</title>
+    <link href="../dist/output.css" rel="stylesheet">
+    <style>
+        table.org th{
+            border: 1px dotted skyblue;
+        }
+    </style>
+</head>
+<body>
+    <div class="flex">
+        <div>
+            <table class="org" style="border:1px solid blue; text-align: center;" >
+                <thead>
+                    <tr style="background-color: aqua;">
+                        <th>용도</th>
+                        <th>중량</th>
+                        <th>개수</th>
+                        <th>가격</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="2">선물용</td>
+                        <td class="col ">3KG</td>
+                        <td class="col">11-16과</td>
+                        <td class="col ">35,000원</td>
+                    </tr>
+                    <tr>
+                        <td class="col ">3KG</td>
+                        <td class="col">11-16과</td>
+                        <td class="col ">35,000원</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2">선물용</td>
+                        <td class="col ">3KG</td>
+                        <td class="col">11-16과</td>
+                        <td class="col ">35,000원</td>
+                    </tr>
+                    <tr>
+                        <td class="col ">3KG</td>
+                        <td class="col">11-16과</td>
+                        <td class="col ">35,000원</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="grid grid-cols-4">
+            <div >용도</div>
+            <div >중량</div>
+            <div >개수</div>
+            <div >가격</div>
+            <div class="row-span-2 ">선물용</div>
+            <div class="col ">3KG</div>
+            <div class="col">11-16과</div>
+            <div class="col ">35,000원</div>
+            <div class="col">5KG</div>
+            <div class="col ">18-26과</div>
+            <div class="col ">52,000원</div>
+            <div class="col row-span-2 ">가정용</div>
+            <div class="col ">3KG</div>
+            <div class="col">11-16과</div>
+            <div class="col ">35,000원</div>
+            <div class="col">5KG</div>
+            <div class="col ">18-26과</div>
+            <div class="col ">52,000원</div>
+        </div>
+    </div>
+    
+</body>
+</html>
