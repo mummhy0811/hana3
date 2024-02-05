@@ -40,7 +40,20 @@ const depthTimer2 = depth=> new Promise((resolve, reject)=>{
     },depth*1000);
 });
 
+
+//방법1
 depthTimer2(1)
 .then(depthTimer2) 
 .then(depthTimer2)
 .catch(err => console.error(err));
+
+//방법2
+(async() =>{
+    try {
+        const r1=await depthTimer2(1);
+        const r2=await depthTimer2(2);
+        const r3=await depthTimer2(3);
+    } catch (err) {
+        console.error(err);
+    }
+})();
