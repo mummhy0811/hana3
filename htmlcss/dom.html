@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS-DOM</title>
+    <script src="dom.js" defer></script>
+    <style>
+        ul{
+            list-style:none;
+            padding: 20px;
+        }
+        .bg-yellow{
+            background-color: yellow;
+        }
+        .show{
+            display:inline-block;
+            padding: 20px;
+        }
+        .hide{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>수강신청</h2>
+    
+    <ul class="show" id="ul">
+        <div >과목</div>
+        <li id="li1">
+            <input id="lang" value="Java" type="checkbox" onclick='getCheckboxValue(event)'> Java
+        </li>
+        <li id="li2">
+            <input id="lang" value="JavaScript" type="checkbox" onclick='getCheckboxValue(event)'> JavaScript</label>
+        </li>
+        <li id="li3">
+            <input  id="lang"value="Kotlin" type="checkbox" onclick='getCheckboxValue(event)'> Kotlin</label>
+        </li>
+    </ul>
+</body>
+</html>
