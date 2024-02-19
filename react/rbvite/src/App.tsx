@@ -4,6 +4,7 @@ import { useState } from 'react';
 import './App.css';
 import { Hello } from './components/Hello';
 import { My } from './components/My';
+import { flushSync } from 'react-dom';
 
 // {ss: 'FirstComponent' }
 // function H5(prop: { ss: string }) {
@@ -34,18 +35,32 @@ function App() {
 
   // const plusCount = () => setCount(count + 1);
   const plusCount = () => setCount((prevCount) => prevCount + 1);
-  const login = () => {};
+  const login = (id:number, name:string) => {
+    setSession({...session, loginUser:{id, name}})
+  };
   const logout = () => {
     // setSession({ cart: [...session.cart], loginUser: null });
     // session.loginUser = null;
     setSession({ ...session, loginUser: null });
   };
+  const removeItem = (id:number) => {
+  
+    //방법1
+    setSession({
+      ...session, 
+      cart: [...session.cart.filter(item => item.id!=id)] //방법1 - 가독성 면에서 더 좋다.(순수함수임이 더 잘 드러남)
+      // cart: session.cart.filter(item => item.id!=id) //방법2 - 성능면에서 더 좋다.
+      //상황에 따라 방법1,2 알아서 사용
+    });
 
+    //방법2 //- 값이 바뀌지만 리렌더링 하지 않음(session의 주소가 변하지 않았으므로.)
+    // session.cart=session.cart.filter(item => item.id!=id); 
+  };
   return (
     <>
       <h1 style={{ color: 'white', backgroundColor: 'red' }}>Vite + React</h1>
       {/* <H5 ss={`First-Component ${count}`} /> */}
-      <My session={session} login={login} logout={logout} />
+      <My session={session} login={login} logout={logout} removeItem={removeItem}/>
       <Hello
         name={session.loginUser?.name || 'Guest'}
         age={count}
@@ -56,7 +71,8 @@ function App() {
       <div className='card'>
         <button
           onClick={() => {
-            setCount((count) => count + 1);
+            for(let i=0;i<10;i++)
+            flushSync(() => setCount(c => c + 1));
           }}
         >
           count is {count}
