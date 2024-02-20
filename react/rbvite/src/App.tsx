@@ -56,11 +56,20 @@ function App() {
     //방법2 //- 값이 바뀌지만 리렌더링 하지 않음(session의 주소가 변하지 않았으므로.)
     // session.cart=session.cart.filter(item => item.id!=id); 
   };
+  
+  const addCartItem = (name:string, price:number)=>{
+    const id=Math.max(...session.cart.map((item)=>item.id),0)+1;
+    setSession({
+      ...session,
+      cart: [...session.cart, {id:id, name:name, price:price}]
+    })
+  };
+
   return (
     <>
       <h1 style={{ color: 'white', backgroundColor: 'red' }}>Vite + React</h1>
       {/* <H5 ss={`First-Component ${count}`} /> */}
-      <My session={session} login={login} logout={logout} removeItem={removeItem}/>
+      <My session={session} login={login} logout={logout} removeItem={removeItem} addCartItem={addCartItem}/>
       <Hello
         name={session.loginUser?.name || 'Guest'}
         age={count}
