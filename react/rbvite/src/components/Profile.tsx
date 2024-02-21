@@ -1,14 +1,10 @@
-import { LoginUser } from '../App';
+import { useSession } from "../contexts/session-context";
 
-type Props = {
-  loginUser: LoginUser;
-  logout: () => void;
-};
-
-export const Profile = ({ loginUser, logout }: Props) => {
+export const Profile = () => {
+  const { session, logout } = useSession();
   return (
     <>
-      <h3>이름: {loginUser.name}</h3>
+      <h3>이름: {session.loginUser?.name}</h3>
       <button onClick={logout}>Sign-out</button>
     </>
   );
