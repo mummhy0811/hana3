@@ -11,7 +11,7 @@ function App() {
       <h1 style={{ color: "white", backgroundColor: "red" }}>Vite + React</h1>
       <SessionProvider>
         <My />
-        <Hello age={count} plusCount={plusCount}>
+        <Hello>
           Hello-children!!!!!!!!!!!
         </Hello>
       </SessionProvider>

@@ -2,12 +2,7 @@ import { PropsWithChildren } from "react";
 import { useCounter } from "../contexts/counter-context";
 import { useSession } from "../contexts/session-context";
 
-type Props = {
-  age: number;
-  plusCount: () => void;
-};
-
-export const Hello = ({ children }: PropsWithChildren<Props>) => {
+export const Hello = ({ children }: PropsWithChildren<{}>) => {
   const { count: age, plusCount } = useCounter();
   const { session } = useSession();
 

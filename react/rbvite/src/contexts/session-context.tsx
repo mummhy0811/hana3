@@ -1,8 +1,5 @@
 import { PropsWithChildren, createContext, useContext, useState } from "react";
 
-type LoginUser = { id: number; name: string };
-type Cart = { id: number; name: string; price: number };
-
 const SampleSession: Session = {
   // loginUser: null,
   loginUser: { id: 1, name: "Hong" },
@@ -13,12 +10,7 @@ const SampleSession: Session = {
   ],
 };
 
-type Session = {
-  loginUser: LoginUser | null;
-  cart: Cart[];
-};
-
-type CounterContextProp = {
+type SessionContextProp = {
   session: Session;
   login: (id: number, name: string) => void;
   logout: () => void;
@@ -26,7 +18,7 @@ type CounterContextProp = {
   addCartItem: (name: string, price: number) => void;
 };
 
-const SessionContext = createContext<CounterContextProp>({
+const SessionContext = createContext<SessionContextProp>({
   session: SampleSession,
   login: () => {},
   logout: () => {},
