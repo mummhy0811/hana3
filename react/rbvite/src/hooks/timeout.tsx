@@ -1,10 +1,26 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from "react";
 
-export const useTimeout = (cb: (...args: unknown[]) => void, delay: number) => {
+export const useTimeout = (
+  cb: () => void,
+  delay: number,
+  dependencies: unknown[] = []
+) => {
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  
+  const setup = () => {
+    timerRef.current = setTimeout(cb, delay);
+  };
+  const clear = () => clearTimeout(timerRef.current);
+
+  const reset = () => {
+    setup();
+    clear();
+  };
+
   useEffect(() => {
-    const tmout = setTimeout(cb, delay);
+    setup();
+    return clear;
+  }, dependencies);
 
-    return () => clearTimeout(tmout);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  return{reset, clear};
 };

@@ -46,13 +46,18 @@ export const Login = forwardRef((_, ref: ForwardedRef<LoginHandler>) => {
       minusCount();
     };
   }, [plusCount, minusCount]);
-
-  useTimeout(() => console.log("X=", count), 1000);
-
   const [isShow, toggle] = useToggle();
+
+  const { reset, clear } = useTimeout(()=>console.log(isShow), 1000,[isShow]);
+  reset();
+  useTimeout(clear, 500);
+
+
 
   return (
     <>
+      <button onClick={reset}>reset</button>
+      <button onClick={clear}>clear</button>
       <button
         onClick={toggle}
         style={{ border: `1px solid ${isShow ? "blue" : "yellow"}` }}
