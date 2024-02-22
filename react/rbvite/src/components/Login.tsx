@@ -1,34 +1,67 @@
-import { FormEvent, useRef } from "react";
+import {
+  FormEvent,
+  ForwardedRef,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from "react";
+import { useCounter } from "../contexts/counter-context";
 import { useSession } from "../contexts/session-context";
+import { useTimeout } from "../hooks/timeout";
+import { useToggle } from "../hooks/toggle";
 
-export const Login = () => {
+export type LoginHandler = {
+  noti: (msg: string) => void;
+  focusId: () => void;
+  focusName: () => void;
+};
+
+export const Login = forwardRef((_, ref: ForwardedRef<LoginHandler>) => {
+  const idRef = useRef<HTMLInputElement | null>(null);
+  const nameRef = useRef<HTMLInputElement | null>(null);
+  const { count, plusCount, minusCount } = useCounter();
   const { login } = useSession();
-  const idRef = useRef<HTMLInputElement>(null);
-  const nameRef = useRef<HTMLInputElement>(null);
+
+  const handler = {
+    noti: (msg: string) => alert(msg),
+    focusId: () => idRef.current?.focus(),
+    focusName: () => nameRef.current?.focus(),
+  };
+
+  useImperativeHandle(ref, () => handler);
 
   const makeLogin = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); //submit을 무력화
-    if (!idRef.current?.value) {
-      alert("User ID를 입력하세요");
-      idRef.current?.focus(); //id 입력창으로 포커스 이동
-      return;
-    }
+    e.preventDefault(); // submit 기본 기능을 무력화!
 
-    if (!nameRef.current?.value) {
-      alert("User Name을 입력하세요");
-      nameRef.current?.focus(); //name 입력창으로 포커스 이동
-      return;
-    }
-    const id = idRef.current.value;
-    const name = nameRef.current.value;
-    login(+id, name);
+    const id = Number(idRef.current?.value);
+    const name = nameRef.current?.value;
+    login(id, name ?? "");
   };
+
+  useEffect(() => {
+    plusCount();
+
+    return () => {
+      minusCount();
+    };
+  }, [plusCount, minusCount]);
+
+  useTimeout(() => console.log("X=", count), 1000);
+
+  const [isShow, toggle] = useToggle();
 
   return (
     <>
+      <button
+        onClick={toggle}
+        style={{ border: `1px solid ${isShow ? "blue" : "yellow"}` }}
+      >
+        {isShow ? "HIDE" : "SHOW"}
+      </button>
       <form onSubmit={makeLogin}>
         <div>
-          LoginID:
+          <span style={{ marginRight: "1em" }}>{count}-LoginID:</span>
           <input type="number" ref={idRef} />
         </div>
         <div>
@@ -39,4 +72,5 @@ export const Login = () => {
       </form>
     </>
   );
-};
+});
+Login.displayName = "Login";

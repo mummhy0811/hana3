@@ -1,61 +1,127 @@
-import { FormEvent, useRef } from "react";
-import { Login } from "./Login";
-import { Profile } from "./Profile";
-import { useSession } from "../contexts/session-context";
+import {
+  ForwardedRef,
+  createRef,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
+import { Login, LoginHandler } from './Login';
+import { Profile } from './Profile';
+import { useSession } from '../contexts/session-context';
 
-export const My = () => {
-  const { session, removeItem, addCartItem } = useSession();
-  const nameRef = useRef<HTMLInputElement>(null);
-  const priceRef = useRef<HTMLInputElement>(null);
+export type ItemHandler = {
+  signOut: () => void;
+  notify: (msg: string) => void;
+  removeItem: () => void;
+  loginHandler: Partial<LoginHandler>;
+};
 
-  const addCart = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); //submit을 무력화
 
-    if (!nameRef.current?.value) {
-      alert("상품 이름을 입력하세요");
-      nameRef.current?.focus();
-      return;
-    }
+const My = forwardRef((_, ref: ForwardedRef<ItemHandler>) => {
+  const [currId, setCurrId] = useState(0);
+  const [message, setMessage] = useState('');
 
-    if (!priceRef.current?.value) {
-      alert("상품 가격을 입력하세요");
-      priceRef.current?.focus();
-      return;
-    }
-    const price = priceRef.current.value;
-    const name = nameRef.current.value;
-    addCartItem(name, +price);
-    nameRef.current.value = "";
-    priceRef.current.value = "";
+  const {
+    session: { loginUser, cart },
+    removeItem,
+    saveItem,
+  } = useSession();
+
+  const itemNameRef = useRef<HTMLInputElement>(null);
+  const itemPriceRef = useRef<HTMLInputElement>(null);
+
+  const logoutBtnRef = createRef<HTMLButtonElement>();
+  const loginHandlerRef = useRef<LoginHandler>(null);
+
+  const itemHandler: ItemHandler = {
+    signOut: () => logoutBtnRef.current?.click(),
+    notify: (msg: string) => setMessage(msg),
+    removeItem: () => {
+      const { id } = cart.find((_, idx) => idx === 1)!;
+      removeItem(id);
+    },
+    loginHandler: {
+      noti: (msg: string) => loginHandlerRef.current?.noti(msg),
+      focusId: () => loginHandlerRef.current?.focusId(),
+      focusName: () => loginHandlerRef.current?.focusName(),
+    },
   };
 
+  useImperativeHandle(ref, () => itemHandler);
+
+  const saveCartItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    // const id = itemIdRef.current;
+    const id = currId;
+    console.log('🚀  id:', id);
+    const name = itemNameRef.current?.value;
+    const price = Number(itemPriceRef.current?.value);
+    if (!name) {
+      alert('상품명을 정확히 입력하세요!');
+      itemNameRef.current?.focus();
+      return;
+    } else if (isNaN(price) || !price) {
+      alert('가격을 정확히 입력하세요!');
+      itemPriceRef.current?.focus();
+      return;
+    }
+
+    saveItem({ id, name, price });
+    setCurrId(0);
+    itemNameRef.current.value = '';
+    if (itemPriceRef.current) itemPriceRef.current.value = '0';
+  };
   return (
     <div
-      style={{ border: "2px solid red", marginBottom: "2rem", padding: "1rem" }}
+      style={{
+        border: '2px solid red',
+        marginBottom: '2rem',
+        padding: '1rem',
+      }}
     >
-      {session.loginUser ? <Profile /> : <Login/>}
+      {message && (
+        <>
+          <h3>{message}</h3>
+          <hr />
+        </>
+      )}
 
-      <form onSubmit={addCart}>
-        <div>
-          item name:
-          <input type="text" ref={nameRef} />
-        </div>
-        <div>
-          item price:
-          <input type="number" ref={priceRef} />
-        </div>
-        <button type="submit">add item</button>
-      </form>
+      {loginUser ? (
+        <Profile ref={logoutBtnRef} />
+      ) : (
+        <Login ref={loginHandlerRef} />
+      )}
 
-      <ul>
-        {session.cart.map(({ id, name, price }) => (
-          <li key={id}>
+      <ul className='un-list'>
+        {cart.map(({ id, name, price }: Cart) => (
+          <li
+            onClick={() => {
+              setCurrId(id);
+              if (itemNameRef.current) itemNameRef.current.value = name;
+              if (itemPriceRef.current)
+                itemPriceRef.current.value = price.toString();
+            }}
+            aria-hidden='true'
+            key={id}
+            className={`pointer ${currId === id ? 'active' : ''}`}
+          >
             <small>{id}.</small>
             {name} ({price.toLocaleString()}원)
             <button onClick={() => removeItem(id)}>X</button>
           </li>
         ))}
       </ul>
+      <form onSubmit={saveCartItem} onReset={() => setCurrId(0)}>
+        <input type='text' ref={itemNameRef} placeholder='상품명...' />
+        <input type='number' ref={itemPriceRef} placeholder='금액...' />
+        <button type='reset'>취소</button>
+        <button type='submit'>{currId ? '수정' : '추가'}</button>
+      </form>
     </div>
   );
-};
+});
+
+My.displayName = 'My';
+
+export default My;
