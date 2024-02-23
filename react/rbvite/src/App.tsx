@@ -1,9 +1,14 @@
-import { Ref, createRef, forwardRef, useRef } from "react";
+import { Ref, createRef, forwardRef, useLayoutEffect, useRef, useState } from "react";
 import "./App.css";
 import Hello from "./components/Hello";
 import My, { ItemHandler } from "./components/My";
 import { useCounter } from "./contexts/counter-context";
 import { SessionProvider } from "./contexts/session-context";
+
+type Position = {
+  x: number;
+  y: number;
+}
 
 const H5 = forwardRef(({ ss }: { ss: string }, ref: Ref<HTMLInputElement>) => {
   return (
@@ -16,15 +21,29 @@ const H5 = forwardRef(({ ss }: { ss: string }, ref: Ref<HTMLInputElement>) => {
 H5.displayName = "H5";
 
 function App() {
-  const { count, plusCount } = useCounter();
 
+  const { count, plusCount } = useCounter();
+  const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
+  
   const childInputRef = createRef<HTMLInputElement>();
   const titleRef = useRef<HTMLHeadingElement>(null);
 
   const myHandlerRef = useRef<ItemHandler>(null);
 
+  const catchMousePosition = ({ x, y }: Position) => {
+    setPosition({ x, y });
+  }
+  
+  useLayoutEffect(() => { // ← 만약 useEffect로 하면?? 거의(컴이 빠르면 찰나의 차이) 동일
+    window.addEventListener('mousemove', catchMousePosition);
+  
+    return () => window.removeEventListener('mousemove', catchMousePosition);
+  })
+  
+  
   return (
     <>
+    <small>{JSON.stringify(position)}</small>
       <h1 ref={titleRef} style={{ color: "white", backgroundColor: "red" }}>
         Vite + React
       </h1>

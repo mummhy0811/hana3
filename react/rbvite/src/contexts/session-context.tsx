@@ -4,6 +4,7 @@ import {
   RefObject,
   createContext,
   useContext,
+  useEffect,
   useState,
 } from 'react';
 import { ItemHandler } from '../components/My';
@@ -41,7 +42,8 @@ type ProviderProps = {
 
 export const SessionProvider = ({ children, myHandlerRef }: ProviderProps) => {
   const [session, setSession] = useState<Session>(SampleSession);
-
+  
+  
   const login = (id: number, name: string) => {
     const loginNoti = myHandlerRef?.current?.loginHandler.noti || alert;
     console.log('🚀  loginNoti:', loginNoti);
@@ -89,6 +91,20 @@ export const SessionProvider = ({ children, myHandlerRef }: ProviderProps) => {
       cart: session.cart.filter((item) => item.id !== itemId),
     });
   };
+
+  useEffect(()=>{
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    (async function () {
+      const res = await fetch('/data/sample.json', {signal});
+      const data = await res.json();
+      setSession(data);
+    })()
+
+    return () => controller.abort(); //네트워크를 취소하라는 신호를 보냄
+
+  },[]);
 
   return (
     <SessionContext.Provider
