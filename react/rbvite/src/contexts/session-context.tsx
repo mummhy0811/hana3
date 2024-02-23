@@ -102,7 +102,7 @@ export const SessionProvider = ({ children, myHandlerRef }: ProviderProps) => {
       setSession(data);
     })()
 
-    return () => controller.abort(); //네트워크를 취소하라는 신호를 보냄
+    return () => {};//controller.abort(); //네트워크를 취소하라는 신호를 보냄
 
   },[]);
 
