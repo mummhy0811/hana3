@@ -43,7 +43,7 @@ export const Login = forwardRef((_, ref: ForwardedRef<LoginHandler>) => {
     plusCount();
 
     return () => {
-      minusCount();
+      minusCount(10);
     };
   }, [plusCount, minusCount]);
   const [isShow, toggle] = useToggle();
