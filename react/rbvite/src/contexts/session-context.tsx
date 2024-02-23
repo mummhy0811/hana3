@@ -5,6 +5,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import { ItemHandler } from '../components/My';
@@ -15,6 +16,7 @@ type SessionContextProp = {
   logout: () => void;
   saveItem: ({ id, name, price }: Cart) => void;
   removeItem: (itemId: number) => void;
+  totalPrice: number;
 };
 
 const SampleSession: Session = {
@@ -33,6 +35,7 @@ const SessionContext = createContext<SessionContextProp>({
   logout: () => {},
   saveItem: () => {},
   removeItem: () => {},
+  totalPrice: 0,
 });
 
 type ProviderProps = {
@@ -43,7 +46,10 @@ type ProviderProps = {
 export const SessionProvider = ({ children, myHandlerRef }: ProviderProps) => {
   const [session, setSession] = useState<Session>(SampleSession);
   
-  
+  const totalPrice = useMemo(()=>
+    session.cart.reduce((sum, item)=>sum+item.price, 0)
+  ,[session.cart]);
+
   const login = (id: number, name: string) => {
     const loginNoti = myHandlerRef?.current?.loginHandler.noti || alert;
     console.log('🚀  loginNoti:', loginNoti);
@@ -80,7 +86,7 @@ export const SessionProvider = ({ children, myHandlerRef }: ProviderProps) => {
     }
 
     setSession({
-      ...session,
+      ...session,cart:[...cart]
     });
   };
 
@@ -108,7 +114,7 @@ export const SessionProvider = ({ children, myHandlerRef }: ProviderProps) => {
 
   return (
     <SessionContext.Provider
-      value={{ session, login, logout, saveItem, removeItem }}
+      value={{ session, login, logout, saveItem, removeItem, totalPrice }}
     >
       {children}
     </SessionContext.Provider>
