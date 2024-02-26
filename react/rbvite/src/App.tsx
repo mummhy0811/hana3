@@ -7,6 +7,7 @@ import { useCounter } from './contexts/counter-context';
 import { SessionProvider } from './contexts/session-context';
 import Posts from './components/Posts';
 import MouseCapture from './components/MouseCapture';
+import DeferTrans from './components/DeferTrans';
 
 const H5 = forwardRef(({ ss }: { ss: string }, ref: Ref<HTMLInputElement>) => {
   return (
@@ -27,6 +28,7 @@ function App() {
 
   return (
     <>
+    <DeferTrans/>
       <h1 ref={titleRef} style={{ color: 'white', backgroundColor: 'red' }}>
         Vite + React
       </h1>
