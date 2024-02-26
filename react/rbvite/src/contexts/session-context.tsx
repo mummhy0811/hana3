@@ -6,9 +6,10 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
-} from 'react';
-import { ItemHandler } from '../components/My';
+  useReducer,
+} from "react";
+import { ItemHandler } from "../components/My";
+import { useFetch } from "../hooks/fetch";
 
 type SessionContextProp = {
   session: Session;
@@ -19,15 +20,29 @@ type SessionContextProp = {
   totalPrice: number;
 };
 
-const SampleSession: Session = {
-  loginUser: null,
-  // loginUser: { id: 1, name: 'Hong' },
-  cart: [
-    { id: 100, name: '라면', price: 3000 },
-    { id: 101, name: '컵라면', price: 2000 },
-    { id: 200, name: '파', price: 5000 },
-  ],
+type ProviderProps = {
+  children: ReactNode;
+  myHandlerRef?: RefObject<ItemHandler>;
 };
+
+type Action =
+  | {
+      type: "login" | "logout";
+      payload: LoginUser | null;
+    }
+  | {
+      type: "set";
+      payload: Session;
+    }
+  | {
+      type: "saveItem";
+      payload: Cart;
+    }
+  | {
+      type: "removeItem";
+      payload: number;
+    };
+
 
 const SessionContext = createContext<SessionContextProp>({
   session: { loginUser: null, cart: [] },
@@ -38,79 +53,87 @@ const SessionContext = createContext<SessionContextProp>({
   totalPrice: 0,
 });
 
-type ProviderProps = {
-  children: ReactNode;
-  myHandlerRef?: RefObject<ItemHandler>;
+const reducer = (session: Session, { type, payload }: Action) => {
+  switch (type) {
+    case "set":
+      return { ...(payload as Session) };
+    case "login":
+      return { ...session, loginUser: payload };
+    case "logout":
+      return { ...session, loginUser: null };
+    case "saveItem": {
+      //const는 case문 안에서 쓰면 좋지 않기 때문에, 블럭스코프로 묶어준다.
+      const { cart } = session;
+      const { id, name, price } = payload;
+      const foundItem = id !== 0 && cart.find((item) => item.id === id);
+
+      if (!foundItem) {
+        const maxId = Math.max(...session.cart.map((item) => item.id), 0);
+         // cart.push({ id: maxId + 1, name, price }); // 기존 코드 -> Bug!!
+        return { ...session, cart: [...cart, { id: maxId + 1, name, price }] };
+      }
+
+      foundItem.name = name;
+      foundItem.price = price;
+      return { ...session };
+    }
+    case "removeItem":
+      return {
+        ...session,
+        cart: session.cart.filter((item) => item.id !== payload),
+      };
+    default:
+      return session;
+  }
 };
 
 export const SessionProvider = ({ children, myHandlerRef }: ProviderProps) => {
-  const [session, setSession] = useState<Session>(SampleSession);
-  
-  const totalPrice = useMemo(()=>
-    session.cart.reduce((sum, item)=>sum+item.price, 0)
-  ,[session.cart]);
+  const [session, dispatch] = useReducer(reducer, {
+    loginUser: null,
+    cart: [],
+  });
+
+  const totalPrice = useMemo(
+    () => session.cart.reduce((sum, item) => sum + item.price, 0),
+    [session.cart]
+  );
 
   const login = (id: number, name: string) => {
     const loginNoti = myHandlerRef?.current?.loginHandler.noti || alert;
-    console.log('🚀  loginNoti:', loginNoti);
-
     const focusId = myHandlerRef?.current?.loginHandler.focusId;
     const focusName = myHandlerRef?.current?.loginHandler.focusName;
 
     if (!id || isNaN(id)) {
-      loginNoti('User ID를 입력하세요!');
+      loginNoti("User ID를 입력하세요!");
       if (focusId) focusId();
       return;
     }
 
     if (!name) {
-      loginNoti('User name을 입력하세요!');
+      loginNoti("User name을 입력하세요!");
       if (focusName) focusName();
       return;
     }
+    dispatch({ type: "login", payload: { id, name } });
+  };
 
-    setSession({ ...session, loginUser: { id, name } });
-  };
-  const logout = () => {
-    setSession({ ...session, loginUser: null });
-  };
-  const saveItem = ({ id, name, price }: Cart) => {
-    const { cart } = session;
-    const foundItem = id !== 0 && cart.find((item) => item.id === id);
-    if (!foundItem) {
-      id = Math.max(...session.cart.map((item) => item.id), 0) + 1;
-      cart.push({ id, name, price });
-    } else {
-      foundItem.name = name;
-      foundItem.price = price;
+  const logout = () => dispatch({ type: "logout", payload: null });
+
+  const saveItem = ({ id, name, price }: Cart) =>
+    dispatch({ type: "saveItem", payload: { id, name, price } });
+
+  const removeItem = (itemId: number) =>
+    dispatch({ type: "removeItem", payload: itemId });
+
+  const { data } = useFetch<Session>({
+    url: '/data/sample.json',
+  });
+
+  useEffect(() => {
+    if (data) {
+      dispatch({ type: "set", payload: data });
     }
-
-    setSession({
-      ...session,cart:[...cart]
-    });
-  };
-
-  const removeItem = (itemId: number) => {
-    console.log('🚀  itemId:', itemId);
-    setSession({
-      ...session,
-      cart: session.cart.filter((item) => item.id !== itemId),
-    });
-  };
-
-  useEffect(()=>{
-    const controller = new AbortController();
-    const { signal } = controller;
-
-    (async function () {
-      const res = await fetch('/data/sample.json', {signal});
-      const data = await res.json();
-      setSession(data);
-    })()
-
-    return () => {};//controller.abort(); //네트워크를 취소하라는 신호를 보냄
-
-  },[]);
+  }, [data]);
 
   return (
     <SessionContext.Provider
