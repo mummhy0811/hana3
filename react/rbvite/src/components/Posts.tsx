@@ -1,17 +1,11 @@
 import { useSession } from '../contexts/session-context';
-import { FaAngleDown, FaAngleUp } from 'react-icons/fa6';
 import { Login } from './Login';
-import { useToggle } from '../hooks/toggle';
 import { useFetch } from '../hooks/fetch';
-import { clsx } from 'clsx';
+import { useSearchParams } from 'react-router-dom';
+import { useTimeout } from '../hooks/timeout';
+import { useEffect, useState } from 'react';
+import Post, { PostType } from './Post';
 
-
-type PostType = {
-  userId: number;
-  id: number;
-  title: string;
-  body: string;
-};
 
 const BASE_URL = 'https://jsonplaceholder.typicode.com';
 
@@ -29,12 +23,21 @@ export default function Posts() {
     dependencies: [loginUser],
     defaultData: [],
   });
+  
+  const [searchParams, setSearchParams] = useSearchParams({ q: '' });
+  const q = searchParams.get('q');
+  useTimeout(() => setSearchParams({ q: 'qqq' }), 1000);
+  const [searchStr, setSearchStr] = useState('');
+  useEffect(() => {
+    setSearchStr(q || '');
+  }, []);
 
   return (
     <div className='active'>
+      <h1>{searchStr}</h1>
       {isLoading && <h1>Fetching Posts...</h1>}
       {error && <h3 style={{ color: 'red' }}>Error: {error}</h3>}
-      <h3>#{loginUser?.id}`s Posts</h3>
+      <h3>#user{loginUser?.id}`s Posts</h3>
       <ul className='un-list'>
         {!loginUser && (
           <>
@@ -43,35 +46,10 @@ export default function Posts() {
           </>
         )}
         {posts?.map((post) => (
-          <Post key={post.id} post={post} />
+          <Post key={post.id} postData={post} />
         ))}
       </ul>
     </div>
   );
 }
 
-// Best!!
-const Post = ({ post }: { post: PostType }) => {
-  const [isOpen, toggleOpen] = useToggle();
-
-  return (
-    <li
-      className={clsx({
-        border: isOpen,
-        'border-green-500': isOpen,
-        'mx-3': isOpen,
-      })}
-    >
-      <strong className={clsx(isOpen && 'text-green-500 underline', 'italic')}>
-        {post.title}
-      </strong>
-      <button
-        onClick={() => toggleOpen()}
-        className='rounded ml-3 text-blue-700'
-      >
-        {isOpen ? <FaAngleUp /> : <FaAngleDown />}
-      </button>
-      {isOpen && <div className='text-sm text-gray-500'>{post.body}</div>}
-    </li>
-  );
-};

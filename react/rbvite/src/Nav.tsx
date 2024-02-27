@@ -18,12 +18,21 @@ export const Nav = () => (
       <li>
         <NavLink
           to='/posts'
-          style={({ isActive, isPending }) => {
-            console.log({ isActive, isPending });
+          style={({ isActive }) => {
             return { color: isActive ? 'red' : 'inherit' };
           }}
         >
           Posts
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to='/posts/5'
+          style={({ isActive }) => {
+            return { color: isActive ? 'red' : 'inherit' };
+          }}
+        >
+          Posts5
         </NavLink>
       </li>
       <li>
