@@ -11,7 +11,7 @@ export default function Sample(){
     return (
     <>
     <div>
-        <h1>Sample</h1>
+        <h1 className='text-lg font-bold'>Sample</h1>
         <h5>nickname = {nickname} ({age})세 </h5>
         <input value={nickname} type="text" onChange={changeNickname} /> 
         <input value={age} type="number" onChange={(e)=>setAge(e.currentTarget.valueAsNumber)} /> 

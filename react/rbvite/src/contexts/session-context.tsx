@@ -10,10 +10,11 @@ import {
 } from "react";
 import { ItemHandler } from "../components/My";
 import { useFetch } from "../hooks/fetch";
+import { LoginHandler } from "../components/Login";
 
 type SessionContextProp = {
   session: Session;
-  login: (id: number, name: string) => void;
+  login: (id: number, name: string) => boolean;
   logout: () => void;
   saveItem: ({ id, name, price }: Cart) => void;
   removeItem: (itemId: number) => void;
@@ -23,6 +24,7 @@ type SessionContextProp = {
 type ProviderProps = {
   children: ReactNode;
   myHandlerRef?: RefObject<ItemHandler>;
+  loginHandlerRef?: RefObject<LoginHandler>;
 };
 
 type Action =
@@ -46,7 +48,7 @@ type Action =
 
 const SessionContext = createContext<SessionContextProp>({
   session: { loginUser: null, cart: [] },
-  login: () => {},
+  login: () => false,
   logout: () => {},
   saveItem: () => {},
   removeItem: () => {},
@@ -87,7 +89,7 @@ const reducer = (session: Session, { type, payload }: Action) => {
   }
 };
 
-export const SessionProvider = ({ children, myHandlerRef }: ProviderProps) => {
+export const SessionProvider = ({ children, myHandlerRef ,loginHandlerRef,}: ProviderProps) => {
   const [session, dispatch] = useReducer(reducer, {
     loginUser: null,
     cart: [],
@@ -99,22 +101,30 @@ export const SessionProvider = ({ children, myHandlerRef }: ProviderProps) => {
   );
 
   const login = (id: number, name: string) => {
-    const loginNoti = myHandlerRef?.current?.loginHandler.noti || alert;
-    const focusId = myHandlerRef?.current?.loginHandler.focusId;
-    const focusName = myHandlerRef?.current?.loginHandler.focusName;
+    const loginNoti =
+      myHandlerRef?.current?.loginHandler.noti ||
+      loginHandlerRef?.current?.noti ||
+      alert;
+      const focusId =
+      myHandlerRef?.current?.loginHandler.focusId ||
+      loginHandlerRef?.current?.focusId;
+    const focusName =
+      myHandlerRef?.current?.loginHandler.focusName ||
+      loginHandlerRef?.current?.focusName;
 
     if (!id || isNaN(id)) {
       loginNoti("User ID를 입력하세요!");
       if (focusId) focusId();
-      return;
+      return false;
     }
 
     if (!name) {
       loginNoti("User name을 입력하세요!");
       if (focusName) focusName();
-      return;
+      return false;
     }
     dispatch({ type: "login", payload: { id, name } });
+    return true;
   };
 
   const logout = () => dispatch({ type: "logout", payload: null });

@@ -3,7 +3,7 @@ import { PropsWithChildren, createContext, useContext, useReducer } from "react"
 type CounterContextProp = {
   count: number;
   plusCount: () => void;
-  minusCount: (count:number) => void;
+  minusCount: (count?:number) => void;
 };
 
 type ReducerAction = {

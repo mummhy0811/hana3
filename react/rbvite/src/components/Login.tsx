@@ -10,6 +10,7 @@ import { useCounter } from "../contexts/counter-context";
 import { useSession } from "../contexts/session-context";
 import { useTimeout } from "../hooks/timeout";
 import { useToggle } from "../hooks/toggle";
+import { useNavigate } from "react-router-dom";
 
 export type LoginHandler = {
   noti: (msg: string) => void;
@@ -22,7 +23,8 @@ export const Login = forwardRef((_, ref: ForwardedRef<LoginHandler>) => {
   const nameRef = useRef<HTMLInputElement | null>(null);
   const { count, plusCount, minusCount } = useCounter();
   const { login } = useSession();
-
+  const navigate = useNavigate();
+  
   const handler = {
     noti: (msg: string) => alert(msg),
     focusId: () => idRef.current?.focus(),
@@ -36,21 +38,24 @@ export const Login = forwardRef((_, ref: ForwardedRef<LoginHandler>) => {
 
     const id = Number(idRef.current?.value);
     const name = nameRef.current?.value;
-    login(id, name ?? "");
+    if (login(id, name ?? '')) navigate('/my');
   };
 
   useEffect(() => {
     plusCount();
-
+    idRef.current?.focus();
     return () => {
-      minusCount(10);
+      minusCount();
     };
   }, [plusCount, minusCount]);
+
   const [isShow, toggle] = useToggle();
 
-  const { reset, clear } = useTimeout(()=>console.log(isShow), 1000,[isShow]);
-  reset();
-  useTimeout(clear, 500);
+  const { reset, clear } = useTimeout(
+    () => console.log('isShow=', isShow),
+    isShow ? 1000 : 2000,
+    [isShow]
+  );
 
 
 
