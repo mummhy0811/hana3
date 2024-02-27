@@ -2,7 +2,6 @@ import { useSession } from '../contexts/session-context';
 import { Login } from './Login';
 import { useFetch } from '../hooks/fetch';
 import { useSearchParams } from 'react-router-dom';
-import { useTimeout } from '../hooks/timeout';
 import { useEffect, useState } from 'react';
 import Post, { PostType } from './Post';
 
@@ -24,9 +23,8 @@ export default function Posts() {
     defaultData: [],
   });
   
-  const [searchParams, setSearchParams] = useSearchParams({ q: '' });
+  const [searchParams] = useSearchParams({ q: '' });
   const q = searchParams.get('q');
-  useTimeout(() => setSearchParams({ q: 'qqq' }), 1000);
   const [searchStr, setSearchStr] = useState('');
   useEffect(() => {
     setSearchStr(q || '');

@@ -11,7 +11,8 @@ import { NotFound } from './NotFound';
 import { Home } from './components/Home';
 import Sample from './components/Sample';
 import DeferTrans from './components/DeferTrans';
-import Post from './components/Post';
+import { PostLayout } from './components/PostLayout';
+import { PostDetail } from './components/PostDetail';
 
 function App() {
   const myHandlerRef = useRef<ItemHandler>(null);
@@ -28,9 +29,9 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/login' element={<Login ref={loginHandlerRef} />} />
           <Route path='/my' element={<My ref={myHandlerRef} />} />
-          <Route path='/posts'>
+          <Route path='/posts' element={<PostLayout/>}>
             <Route index element={<Posts />} />
-            <Route path=':id' element={<Post />} />
+            <Route path=':id' element={<PostDetail />} />
           </Route>
           <Route path='/hello' element={<Hello />} />
           <Route path='/sample' element={<Sample />} />
