@@ -13,6 +13,9 @@ import Sample from './components/Sample';
 import DeferTrans from './components/DeferTrans';
 import { PostLayout } from './components/PostLayout';
 import { PostDetail } from './components/PostDetail';
+import { ItemLayout } from './components/items_v1/ItemLayout';
+import Items from './components/items_v1/Items';
+import Item from './components/items_v1/Item';
 
 function App() {
   const myHandlerRef = useRef<ItemHandler>(null);
@@ -37,6 +40,12 @@ function App() {
           <Route path='/sample' element={<Sample />} />
           <Route path='/difertrans' element={<DeferTrans />} />
           <Route path='*' element={<NotFound />} />
+
+          <Route path='/v1/items' element={<ItemLayout />}>
+            <Route index element={<Items/>}/>
+            <Route path=':id' element={<Item />} />
+          </Route>
+          
         </Routes>
       </SessionProvider>
     </>

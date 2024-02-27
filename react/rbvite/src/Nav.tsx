@@ -49,6 +49,12 @@ export const Nav = () => (
         </NavLink>
       </li>
       <li>
+        <NavLink to='/v1/items'>ItemLayout1</NavLink>
+      </li>
+      <li>
+        <NavLink to='/v2/items'>ItemLayout2</NavLink>
+      </li>
+      <li>
         <NavLink to='/samplexxxx'>Sample</NavLink>
       </li>
       <li>
