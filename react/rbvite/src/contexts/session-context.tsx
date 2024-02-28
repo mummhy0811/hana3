@@ -6,6 +6,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useReducer,
 } from "react";
@@ -21,15 +22,6 @@ type SessionContextProp = {
   totalPrice: number;
 };
 
-const SessionContext = createContext<SessionContextProp>({
-  session: { loginUser: null, cart: [] },
-  login: () => false,
-  logout: () => {},
-  saveItem: () => {},
-  removeItem: () => {},
-  totalPrice: 0,
-});
-
 type ProviderProps = {
   children: ReactNode;
   myHandlerRef?: RefObject<ItemHandler>;
@@ -44,6 +36,15 @@ type Action =
   | { type: "set"; payload: Session }
   | { type: "saveItem"; payload: Cart }
   | { type: "removeItem"; payload: number };
+
+const SessionContext = createContext<SessionContextProp>({
+  session: { loginUser: null, cart: [] },
+  login: () => false,
+  logout: () => {},
+  saveItem: () => {},
+  removeItem: () => {},
+  totalPrice: 0,
+});
 
 const reducer = (session: Session, { type, payload }: Action) => {
   let newer;
@@ -168,6 +169,10 @@ export const SessionProvider = ({
 
   const removeItem = useCallback((itemId: number) => {
     dispatch({ type: "removeItem", payload: itemId });
+  }, []);
+
+  useEffect(() => {
+    dispatch({ type: "set", payload: getStorage() });
   }, []);
 
   return (
